@@ -44576,7 +44576,7 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 var formSchema = yup.object().shape({
-  name: yup.string().required(),
+  name: yup.string().required().min(3, 'Name needs to be 3 or more characters long'),
   email: yup.string().email('Email is required').required('Email is required'),
   password: yup.string()
 });
@@ -44594,7 +44594,8 @@ var _react = _interopRequireDefault(require("react"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Form = function Form(props) {
-  var handleChange = props.handleChange,
+  var isDisabled = props.isDisabled,
+      handleChange = props.handleChange,
       handleSubmit = props.handleSubmit,
       err = props.err;
   console.log('Inside form ==> ', props);
@@ -44604,12 +44605,14 @@ var Form = function Form(props) {
     type: "text",
     name: "name",
     placeholder: "Name",
-    onChange: handleChange
+    onChange: handleChange,
+    "data-cy": "testName"
   }), /*#__PURE__*/_react.default.createElement("input", {
     type: "text",
     name: "email",
     placeholder: "Email",
-    onChange: handleChange
+    onChange: handleChange,
+    cy: "email"
   }), /*#__PURE__*/_react.default.createElement("input", {
     type: "password",
     name: "password",
@@ -44617,8 +44620,9 @@ var Form = function Form(props) {
     onChange: handleChange
   }), /*#__PURE__*/_react.default.createElement("input", {
     type: "submit",
-    value: "Submit your form"
-  }));
+    value: "Submit your form",
+    disabled: isDisabled
+  }), /*#__PURE__*/_react.default.createElement("p", null, err !== undefined ? err.email : null));
 };
 
 var _default = Form;
@@ -44633,15 +44637,21 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
+var _reactRouterDom = require("react-router-dom");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Home = function Home() {
+  var history = (0, _reactRouterDom.useHistory)();
+  setTimeout(function () {
+    history.push('/confirm');
+  }, 2000);
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("h1", null, "Home"));
 };
 
 var _default = Home;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js"}],"Components/Confirmation.jsx":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-router-dom":"../node_modules/react-router-dom/esm/react-router-dom.js"}],"Components/Confirmation.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -44711,7 +44721,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var initialForm = {
   name: '',
   email: '',
-  password: '' // tos: false
+  password: '' // tos: false Hello wo
 
 };
 
@@ -44731,7 +44741,17 @@ var App = function App() {
       err = _useState6[0],
       setErr = _useState6[1];
 
+  var _useState7 = (0, _react.useState)(true),
+      _useState8 = _slicedToArray(_useState7, 2),
+      isDisabled = _useState8[0],
+      setIsDisabled = _useState8[1];
+
   var history = (0, _reactRouterDom.useHistory)();
+  (0, _react.useEffect)(function () {
+    _formSchema.formSchema.isValid(form).then(function (valid) {
+      setIsDisabled(!valid);
+    });
+  }, [form]);
 
   var handleChange = function handleChange(e) {
     if (e.target.type == 'checkbox') {
@@ -44740,7 +44760,7 @@ var App = function App() {
       setForm(_objectSpread(_objectSpread({}, form), {}, _defineProperty({}, e.target.name, e.target.value)));
     }
 
-    validateForm(e);
+    validateForm(e.target.name, e.target.value);
   };
 
   var handleSubmit = function handleSubmit(e) {
@@ -44748,21 +44768,21 @@ var App = function App() {
 
     _axios.default.post('https://reqres.in/api/users', form).then(function (res) {
       setOrder(res.data);
-      history.push('/confirm');
+      history.push('/');
     }).catch(function (err) {
       console.log(err);
     });
   };
 
-  var validateForm = function validateForm(e) {
-    yup.reach(_formSchema.formSchema, e.target.name).validate(e.target.value).then(function (valid) {
+  var validateForm = function validateForm(name, value) {
+    yup.reach(_formSchema.formSchema, name).validate(value).then(function (valid) {
       setErr(_objectSpread(_objectSpread({}, err), {}, _defineProperty({}, e.target.name, '')));
-    }).catch(function (err) {
-      console.log('ErrValidate--> ', err);
-      setError(_objectSpread(_objectSpread({}, err), {}, _defineProperty({}, e.target.name, err.errors[0])));
+    }).catch(function (error) {
+      setErr(_objectSpread(_objectSpread({}, err), {}, _defineProperty({}, name, error.errors[0])));
     });
   };
 
+  console.log('App err--> ', err);
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
     to: "/"
   }, "Home"), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
@@ -44777,7 +44797,8 @@ var App = function App() {
   }, /*#__PURE__*/_react.default.createElement(_Form.default, {
     err: err,
     handleChange: handleChange,
-    handleSubmit: handleSubmit
+    handleSubmit: handleSubmit,
+    isDisabled: isDisabled
   })), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
     path: "/confirm"
   }, /*#__PURE__*/_react.default.createElement(_Confirmation.default, {
