@@ -4,6 +4,8 @@
 
 ### Steps
 
+- Plan and Organize Components
+  - React Router
 - Create the form*
   - handleChange and handleSubmit
   - Manage the state of the form
