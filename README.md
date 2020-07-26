@@ -4,7 +4,7 @@
 
 ### Steps
 
-- Create the form
+- Create the form*
   - handleChange and handleSubmit
   - Manage the state of the form
   - Submit using axios to: https://reqres.in/api/users
@@ -12,4 +12,7 @@
   - Create a schema
   - Validate during input onChange
   - Disable/enable button
+
+## Author
+Tiffany Arellano | [github](https://github.com/yirano) | [twitter](twitter.com/yiirano)
   
