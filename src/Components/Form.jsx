@@ -16,9 +16,6 @@ const Form = (props) => {
 
       <input type="password" name="password" placeholder="Password" onChange={handleChange} />
 
-      {/* <label id="tos">Terms of Service
-      <input type="checkbox" name="tos" id="tos" />
-      </label> */}
       <input type="submit" value="Submit your form" disabled={isDisabled} />
       <p>{err !== undefined ? (err.email) : null}</p>
     </form>
